@@ -19,8 +19,10 @@ module.exports = setDOM
  *
  * @param {Node} oldNode - The html entity to update.
  * @param {String|Node} newNode - The updated html(entity).
+ * @param {Boolean} skipRootAttribs - If true, do not replace attributes on the
+ *     root node -- only replace its children and their attributes.
  */
-function setDOM (oldNode, newNode) {
+function setDOM (oldNode, newNode, skipRootAttribs) {
   // Ensure a realish dom node is provided.
   assert(oldNode && oldNode.nodeType, 'You must provide a valid node to update.')
 
@@ -36,7 +38,8 @@ function setDOM (oldNode, newNode) {
     setNode(oldNode, typeof newNode === 'string'
       // If a string was provided we will parse it as dom.
       ? parseHTML(newNode, oldNode.nodeName)
-      : newNode
+      : newNode,
+      skipRootAttribs
     )
   }
 
@@ -54,8 +57,12 @@ function setDOM (oldNode, newNode) {
  *
  * @param {Node} oldNode - The previous HTMLNode.
  * @param {Node} newNode - The updated HTMLNode.
+ * @param {Boolean} skipAttribs - If true, do not replace attributes on this
+ *     node, only its children. Does NOT get passed in to children. This only
+ *     takes effect if the nodes are the same type, otherwise attributes WILL
+ *     be replaced.
  */
-function setNode (oldNode, newNode) {
+function setNode (oldNode, newNode, skipAttribs) {
   if (oldNode.nodeType === newNode.nodeType) {
     // Handle regular element node updates.
     if (oldNode.nodeType === ELEMENT_TYPE) {
@@ -68,7 +75,9 @@ function setNode (oldNode, newNode) {
       // Update the elements attributes / tagName.
       if (oldNode.nodeName === newNode.nodeName) {
         // If we have the same nodename then we can directly update the attributes.
-        setAttributes(oldNode.attributes, newNode.attributes)
+        if (!skipAttribs) {
+          setAttributes(oldNode.attributes, newNode.attributes)
+        }
       } else {
         // Otherwise clone the new node to use as the existing node.
         var newPrev = newNode.cloneNode()
