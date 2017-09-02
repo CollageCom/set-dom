@@ -278,7 +278,8 @@ function isIgnored (node) {
  * @return {node}
  */
 function mount (node) {
-  return dispatch(node, 'mount')
+  // Performance optimization by KRB - we don't use these events
+  return node; //dispatch(node, 'mount')
 }
 
 /**
@@ -288,7 +289,8 @@ function mount (node) {
  * @return {node}
  */
 function dismount (node) {
-  return dispatch(node, 'dismount')
+  // Performance optimization by KRB - we don't use these events
+  return node; //dispatch(node, 'dismount')
 }
 
 /**
@@ -297,7 +299,8 @@ function dismount (node) {
  *
  * @param {Node} node - the initial node.
  * @return {Node}
- */
+// Performance optimization by KRB - we don't use these events
+ * /
 function dispatch (node, type) {
   // Trigger event for this element if it has a key.
   if (getKey(node)) {
@@ -314,6 +317,7 @@ function dispatch (node, type) {
   while (child) child = dispatch(child, type).nextSibling
   return node
 }
+*/
 
 /**
  * @private
